@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Social Bin</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <!-- <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    -->
+    <link type="text/css" href="/css/bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="/css/smoothness/jquery-ui-1.8.18.custom.css" rel="stylesheet" />
+
+    <script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.18.custom.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script>
+      $(function() {
+
+                
+        var name = $( "#name" );
+
+
+        function checkLength( o, n, min, max ) 
+        {
+          if ( o.val().length > max || o.val().length < min ) 
+          {
+            o.addClass( "ui-state-error" );
+            //updateTips( "Length of " + n + " must be between " + min + " and " + max + "." );
+            return false;
+          } 
+          else 
+          {
+            return true;
+          }
+        }
+      $( "#comment-form" ).dialog({
+                autoOpen: false,
+                height: 300,
+                width: 450,
+                modal: true,
+                buttons: {
+                  "Add comment": function() {
+                    var bValid = true;
+                    //allFields.removeClass( "ui-state-error" );
+
+                    var name=$("#comment");
+                    
+                    bValid = bValid && checkLength( name, "name",1 , 1000 );
+
+                    //bValid = bValid && checkRegexp( name, /^([0-9a-z_-])+$/i, "Name may consist of a-z, 0-9, dashes and underscores." );
+                    if ( bValid ) {
+
+                      $.ajax({
+                        type:'post',
+                        dataType:'html',
+                        url:'/item/comment/add',
+                        async:false,
+                        data:$("#add-comment-form").serialize(),
+                        success:function(response,status,xml){
+
+
+                          $("#comment-form").dialog("close");
+                        }
+                      });
+                    }
+                },
+                Cancel: function() {
+                  $( this ).dialog( "close" );
+                  }
+              },
+              close: function() {
+                //allFields.val( "" ).removeClass( "ui-state-error" );
+              }
+            });
+
+        $( "#dialog-form" ).dialog({
+                autoOpen: false,
+                height: 200,
+                width: 350,
+                modal: true,
+                buttons: {
+                  "Create a bin": function() {
+                    var bValid = true;
+                    //allFields.removeClass( "ui-state-error" );
+
+                    var name=$("#name");
+                    
+                    bValid = bValid && checkLength( name, "name", 3, 30 );
+
+                    //bValid = bValid && checkRegexp( name, /^([0-9a-z_-])+$/i, "Name may consist of a-z, 0-9, dashes and underscores." );
+                    if ( bValid ) {
+
+                      $.ajax({
+                        type:'post',
+                        dataType:'html',
+                        url:'/bins/add',
+                        async:false,
+                        data:$("#add-bin-form").serialize(),
+                        success:function(response,status,xml){
+
+                          $('<li><a class="title" href="/?bin='+name.val()+'">'+name.val()+'</a></li>').insertBefore($('#create-bin').parent());
+
+                          $("#dialog-form").dialog("close");
+                        }
+                      });
+                    }
+                },
+                Cancel: function() {
+                  $( this ).dialog( "close" );
+                  }
+              },
+              close: function() {
+                //allFields.val( "" ).removeClass( "ui-state-error" );
+              }
+            });
+
+            
+            $( "#create-bin" )
+              .button()
+              .click(function() {
+                $( "#dialog-form" ).dialog( "open" );});
+                                                                                                                                                                                                                                                                                    
+            });
+
+            function addComment(key)
+            {
+              $('#key').val(key);
+              $('#comment-form').dialog("open");
+            }
+
+
+            function deleteItem(key)
+            {
+                  $.ajax({
+                        type:'get',
+                        dataType:'html',
+                        url:'/item/delete/'+key,
+                        async:false,
+                        success:function(response,status,xml){
+                          $('#item-'+key).fadeOut(300,function(){ $(this).remove(); });
+                        }
+                      });
+                    }
+
+          function showComments(key)
+          {
+            alert("comments");
+          }
+
+
+    </script>
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+
+      .hero-unit {
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #f5f5f5;
+        -webkit-border-radius: 6px;
+        -moz-border-radius: 6px;
+        border-radius: 6px;
+      }
+      .hero-unit h2 {
+        margin-bottom: 0;
+        font-size: 20px;
+        line-height: 1;
+        letter-spacing: -1px;
+      }
+      .hero-unit p {
+        font-size: 14px;
+        font-weight: 200;
+        line-height: 22px;
+      }
+
+      .mlt a
+      {
+        color:#00FF00;
+        text-decoration: none
+      }
+      .title
+      {
+        /*font-family:monospace;*/
+        color:black;
+        font-weight:bold;
+        /*font-size:13px;*/
+      }
+    </style>	
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Social Bin</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="/">Home</a></li>
+              <li><a href="/bins">Bins</a></li>
+              <li><a href="/people">People</a></li>
+              <li><a href="/topics">Topics</a></li>
+              <li><a href="/sources">Sources</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/contact">Contact</a></li>
+            </ul>
+            <form method="get" action="" class="navbar-search pull-right">
+              <input id="q" size="50" name="q" value="" type="text" class="search-query" placeholder="Search">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <ul class="breadcrumb">
+        <li>
+        <a href="/">Home</a> <span class="divider">/</span>
+        </li>
+      </ul>
+
+      <div class="row-fluid">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">My Bins</li>
+                {% for bin in bins %}
+                <li><a class="title" href="/?bin={{bin.name}}">{{ bin.name }}</a></li>
+                {% endfor %}
+                <li><button id="create-bin">Create new bin</button></li>
+                </ul>
+            <ul class="nav nav-list">
+              <li class="nav-header">Following</li>
+                  <li><a class="title" href="/">John Doe</a></li>
+            </ul>
+          </div> 
+        </div>
+        <div class="span9">
+          <ul class="thumbnails">
+              {% for item in items %}
+              <li class="span3" id="item-{{item.key}}">
+                <div class="thumbnail" >
+                  <h4><a class="title" href="{{ item.link }}">{{ item.title }}</a></h4>
+                  
+                  <div>
+                  <div class="btn-group">
+                      <a class="btn btn-mini btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Action<span class="caret"></span></a>
+                      <ul class="dropdown-menu">
+                        <li><a href="javascript:addComment('{{item.key}}');">Comment</a></li>
+                        <li><a href="/item/edit/{{item.key}}">Edit</a></li>
+                        <li><a href="javascript:deleteItem('{{item.key}}');">Delete</a></li>
+                      </ul>
+                    </div>
+                      {% if item.num_comments %}
+                        <span class="badge badge-info" onclick="showComments('{{item.key}}');"  >{{item.num_comments}}</span>
+                        {% endif %}
+                    </div>
+                </div>
+              </li>
+              {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="dialog-form" title="Create new bin">
+      <form id="add-bin-form">
+        <fieldset>
+          <label for="name">Name</label>
+          <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" />
+        </fieldset>
+      </form>
+    </div>
+
+    <div id="comment-form" title="Add new comment">
+      <form id="add-comment-form">
+        <fieldset>
+          <label for="comment">Comment</label>
+          <input type="hidden" name="key" id="key" value=""/>
+          <input type="text" name="comment" id="comment" class="text ui-widget-content ui-corner-all" />
+        </fieldset>
+      </form>
+    </div>
+  </body>
+</html>
+
+
